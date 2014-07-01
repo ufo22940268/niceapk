@@ -1,0 +1,55 @@
+import com.android.builder.core.DefaultManifestParser
+
+apply plugin: 'android'
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "19.1.0"
+
+    defaultConfig {
+        applicationId "biubiubiu.me.niceapk"
+        minSdkVersion 8
+        targetSdkVersion 19
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            def manifestParser = new DefaultManifestParser()
+            applicationVariants.all { variant ->
+                def vn = manifestParser.getVersionName(android.sourceSets.main.manifest.srcFile)
+                def vc = manifestParser.getVersionCode(android.sourceSets.main.manifest.srcFile)
+
+                //Get umeng channel
+                def gradleScript = android.sourceSets.main.manifest.srcFile
+                def line = 0
+                def uv = ""
+                gradleScript.eachLine {
+                    if (line == -1) {
+                        uv = it
+                        uv = uv.tokenize('"')[1]
+                        line = 0
+                        return
+                    }
+
+
+                    if (it.contains("UMENG_CHANNEL")) {
+                        line = -1
+                    } else {
+                        line += 1
+                    }
+                }
+
+                def file = variant.outputFile
+                variant.outputFile = new File(file.parent, file.name.replace(".apk", "-name-" + vn + "-code-" + vc + "-channel-" + uv + ".apk"))
+            }
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:19.+'
+}
