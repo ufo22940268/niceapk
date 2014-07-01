@@ -4,7 +4,7 @@
 
 #使用方法
 
-只需要在build.gradle中的release标签中加入下面代码：
+只需要在[build.gradle](https://github.com/ufo22940268/niceapk/blob/master/app/build.gradle)中的release标签中加入下面代码：
 
         def manifestParser = new DefaultManifestParser()
         applicationVariants.all { variant ->
